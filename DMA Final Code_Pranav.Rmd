@@ -1,0 +1,438 @@
+---
+name: Pranav Sai reddy gudipally
+title: "FINAL REPORT-STUDENT ALCOHOL CONSUMPTION DATA SET"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##INRTODUCTION
+
+The data were obtained in a survey of students math and portuguese language courses in secondary school. It contains a lot of interesting variables of data which might affect a studets performance and grades in school like if they are in a romantic relationship, paid tutor,internet connectivity, and consumption of alcohol for students on workday and weekends which gives social, gender and study information about students. i am trying to see if the considered factors play a role in their performance and grades,i want to question the variables and their affect on a personal students grades and combination of different variables and their effect on students performance, we here in our scenario are going to consider only the math.csv dataset and see student performance in math considering variables that might deviate them from studies
+
+
+##DATA DESCRIPTION
+
+- school - student's school (binary: 'GP' - Gabriel Pereira or 'MS' - Mousinho da Silveira)
+- sex - student's sex (binary: 'F' - female or 'M' - male)
+- age - student's age (numeric: from 15 to 22)
+- Pstatus - parent's cohabitation status (binary: 'T' - living together or 'A' - apart)
+- studytime - weekly study time (numeric: 1 - <2 hours, 2 - 2 to 5 hours, 3 - 5 to 10 hours, or 4 - >10 hours)
+- paid - extra paid classes within the course subject (Math or Portuguese) (binary: yes or no)
+-internet - Internet access at home (binary: yes or no)
+romantic - with a romantic relationship (binary: yes or no)
+famrel - quality of family relationships (numeric: from 1 - very bad to 5 - excellent)
+- Dalc - workday alcohol consumption (numeric: from 1 - very low to 5 - very high)
+- Walc - weekend alcohol consumption (numeric: from 1 - very low to 5 - very high)
+- health - current health status (numeric: from 1 - very bad to 5 - very good)
+- absences - number of school absences (numeric: from 0 to 93)
+-These grades are related with the course subject, Math or Portuguese:
+
+- G2 - second period grade (numeric: from 0 to 20)
+
+The data has 395 observations of 33 variables. We wouldn't use all 33 variables, but will select some of them for use. That doesn't mean non-selected variables are not useful in the analysis but this is done to keep it simple.How ever here we are not going to view all the single variable visualizations, but i will show multivariable visualizations on the variable i think when combined to generate a visualization would give meaningful insights about the data i will be pre processing my data for further and will be showing visualizations of variables from the dataset that i will be subsetting.At first we look at the whole data to get a generic idea and then i have subset the required data for analysis as"requdata"
+
+
+###DATA PRE-PROCESSING,CLEANING AND REQUIRED SUBSET CREATION
+
+```{r}
+setwd("C:\\Users\\saipr\\Desktop\\DMA")
+getwd()
+dir()
+classdata<-read.csv("math.csv",na.strings = c("#","*")) #makes any special characters if present  in data to NA
+View(classdata)
+head(classdata)
+nrow(classdata)
+ncol(classdata)
+summary(classdata)
+colSums(is.na(classdata))
+library(VIM)
+aggr(classdata)#shows purity of data so no need for data cleaning
+```
+
+### Subsetting data and retrieving only the required variables in dataset
+```{r}
+requdata<- classdata[-c(1,4,5,7,8,9,10,11,13,15,17,20,21,25,26,31,33)]
+View(requdata)
+```
+
+##VISUALISATIONS AND EDA FOR SINGLE VARIABLES WHERE REQUIRED
+
+
+
+### count of parents of students who live together and apart
+
+```{r}
+library(ggplot2)
+ggplot(requdata, aes(x=Pstatus))+
+  geom_bar()
+
+```
+
+
+
+###Interpretaion-Pstatus
+
+we can see that over 350 child's parents are together in the 395
+
+
+
+###looking at student's weekly study time (numeric: 1 -> <2 hours,  2 -> 2 to 5 hours, 3 -> 5 to 10 hours, or 4 - >10 hours))
+
+```{r}
+requdata$studytime=as.factor(requdata$studytime)
+ggplot(requdata, aes(x=studytime))+
+  geom_bar()
+
+str(requdata)
+```
+
+
+
+###Interpretaion-studytime
+
+we can see that close too 200 students which is more that half the population considered spend 2-5 hours per week studying
+
+
+###PRE-PROCESSING data before using it(changing int to factor where ever needed)
+
+```{r}
+requdata$health<-as.factor(requdata$health)
+requdata$famrel<-as.factor(requdata$famrel)
+requdata$Walc<- as.factor(requdata$Walc)
+requdata$Dalc<- as.factor(requdata$Dalc)
+str(requdata)
+View(classdata)
+View(requdata)
+```
+###looking at students who have- "paid"" - extra paid classes within the course subject
+
+```{r}
+ggplot(requdata, aes(x=paid))+
+  geom_bar()
+
+```
+
+
+
+###Interpretaion- paid
+
+close to 180 students have a paid tutor but majority dont
+
+
+
+
+###count of students who are in a romatic relationship
+
+```{r}
+ggplot(requdata, aes(x=romantic))+
+  geom_bar()
+
+```
+
+
+
+###Interpretaion- romantic
+
+close to 125 people are in a romantic relationship
+
+
+
+
+###students having good or bad relationship with their family-  famrel - quality of family relationships (numeric: from 1 - very bad to 5 - excellent)
+
+```{r}
+ggplot(requdata, aes(x= famrel))+
+  geom_bar()
+```
+
+
+
+###Interpretaion-famrel
+
+close to 190 people in the whole class have a close to excellent relationship with their family which is a nice statistic to find out
+
+
+###students that consume alcohol on workdays
+```{r}
+ggplot(requdata, aes(x=Dalc))+
+  geom_bar()
+```
+
+
+
+###Interpretaion- Dalc
+
+Shows that close to 275 people hardly consume alcohol on workday 
+
+
+
+
+
+###students absences
+```{r}
+ggplot(requdata, aes(x=log(absences)))+
+  geom_bar()
+```
+
+
+###Interpretation-absences(0 being lowest and 4 high)
+
+It's good to see that majority of the number of students are having less absence
+
+
+
+
+
+
+
+###students that consume alcohol on weekends
+```{r}
+ggplot(requdata, aes(x=Walc))+
+  geom_bar()
+```
+
+
+
+###Interpretaion- Walc
+
+shows that 150 people hardly consume alcohol but around 30 people consume alcohol on a high basis
+
+
+
+###students health
+```{r}
+ggplot(requdata, aes(x=health))+
+  geom_bar()
+```
+
+
+
+
+###Interpretaion- health
+
+close to 150 people have a really good health but 40 people have ill health
+
+
+
+
+###student grades
+```{r}
+ggplot(requdata, aes(x=G2))+
+  geom_bar()
+```
+
+
+
+###Interpretation-grades
+
+we can see that close to 50 students have an average score of 10 and just 3 people have a high score of 19
+
+
+
+
+
+##################################################################
+##################################################################
+##MULTI VARIABLE VISUALIZATION
+##################################################################
+##################################################################
+```{r}
+requdata<- requdata[-c(4,6,8)] #removing furthermore unwanted variables
+View(requdata)
+```
+
+###GRADES(G2) AND ABSENCES
+```{r}
+ggplot(requdata, aes(x= log(absences), y= G2)) +
+  geom_point(alpha=0.25)
+```
+
+###G2-Grade(score in math), absences(number of days absent)
+
+
+
+
+###Interpretation
+
+We can see the density of points for kids that have an absence of 0 to be more towards over 10 which is 50% of full score(20), also we can see that the kids who are absent for less than 10 days have a fine score(over 50%) however there are a few outliers like kids who were never absent but have a score of zero and kids who have highest absent days have a score close to 10
+
+
+###Romantic relationship and Grades
+```{r}
+ggplot(requdata, aes(x= as.factor(romantic), y= G2)) +
+  geom_point(alpha=0.25)
+```
+
+
+###Interpretation
+
+As we can see, there is not much of a difference but the students who are not in a romantic relationship(1) are the ones that have the highest grades, the ones who are(2) in a relationship aren't doing bad either, they just have less number of people that score very well, but on the whole ther seems to be equal population at the mean 
+
+###HEALTH AND GRADES
+
+```{r}
+ggplot(requdata, aes(y=G2, x =(health), fill= factor(health))) +
+  geom_violin()
+```
+
+
+###Interpretation
+
+As we can see all the students have scores varying from lowest to highest irrespective of their health, because someone with a health condition of a 1(low) is scoring a minimum or 5 marks out of 20 but someone with good health(5)is scoring a minimum of zero, so in this case we can say that health has not been a variable that has affected a students performance. Also talking about the density, i can see an almost equal split at the mean looking at width of each individual plot
+
+
+
+
+
+
+
+
+```{r}
+requdata$romantic<-as.numeric(as.factor(requdata$romantic))
+requdata$paid<-as.numeric(as.factor(requdata$paid))
+
+View(requdata)
+#converted the requaried variables character data to numeric so that i can derive meaningful visualizations
+```
+
+
+
+
+
+
+
+
+
+
+
+###Grades and alcohol consumption on work day
+```{r}
+ggplot(requdata, aes(y=G2, x =factor(Dalc), fill= factor(Dalc))) +
+  geom_violin()
+```
+
+
+
+###Interpretation
+
+This interesting visualization tells us that students who dont consume alcohol on daily basis(1 score) have both, least and the highest scores population distributed in both ends, the main difference that shall catch an eye is that students those who consume alcohol more frequently on workday are not the top notch grade achievers as there is no one who has a score(grade) over 13 of 20 and talking about population spread, looking at the width we can say that there is equal distribution at the means for all kinds of students(1 to 5)
+
+
+
+###Grades and alcohol consumption on weekends
+```{r}
+ggplot(requdata, aes(y=G2, x =factor(Walc), fill= factor(Walc))) +
+  geom_violin()
+```
+
+
+
+###Interpretation
+
+visualization tells us that students who dont consume alcohol on daily basis(1 score) have both, least and the highest scores population distributed in both ends but more people at the top than at the least, the main difference that shall catch an eye is that students those who consume alcohol more frequently on weekends are almost equal to top notch grade achievers and none of them who consume alcohol frequently on weekends have a score lesser than 5
+
+
+
+
+
+###FAMILY RELATION, GRADES AND ABSENCES
+```{r}
+ggplot(requdata, aes(x=absences , y=G2) )+
+  geom_point(alpha=0.5) +
+  facet_wrap(~factor(famrel))
+```
+
+
+###Interpretation
+
+Moreover, this plot here tells us that most of the students have a good relationship with their family but it does not say that only if you have a good rapport you  get good grades, all the 5 plots have less absences but what we can observe at plot 3,4,5(good famrel) is that scores aare more towards a better than average side and also students who gain the top most scores belong to this criteria(3,4 or 5) there  are a few outliers too because a class seems to be 'complete' when there are all sorts of students right! ;) 
+
+
+
+
+
+###FAMILY RELATION,GRADES,SEX AND ABSENCES
+```{r}
+
+ggplot(requdata, aes(x=absences , y=G2) )+
+  geom_point(alpha=0.4) +
+  facet_grid(sex~factor(famrel))
+```
+
+
+
+###Interpretation
+
+
+This plot here gives the same kind of output as the one we just saw because even when we seperate female to male students, we see the same result, 3,4,5 have a denser plot and better score
+
+
+
+
+
+
+###FAMILY RELATION,SEX,ABSENCES, AND CONSUMPTION OF ALCOHOL ON WORKDAY AND ITS EFFECT ON GRADES
+```{r}
+ggplot(requdata, aes(x=Dalc , y=G2))+
+  geom_point(alpha=0.5) +
+  facet_grid(sex~factor(famrel))
+```
+
+
+
+###Interpretation
+
+
+this seems to be a pretty obvious plot because if a student consumes alcohol on workdays, they they are going to perform poorly, as we can see none of the students who belong to a score of 5 at Dalc score top grade.Also, keeping in ming the density of plots at Dalc=1 we can say that there is a spread of population of students of all sorts like the ones who perform best and worse
+
+
+
+
+
+
+
+###FAMILY RELATION,SEX AND CONSUMPTION OF ALCOHOL ON WEEKEND AND ITS EFFECT ON GRADES
+```{r}
+ggplot(requdata, aes(x=Walc, y=G2))+
+  geom_point(alpha=0.5) +
+  facet_grid(sex~factor(famrel))
+```
+
+
+###Interpretation
+
+In contradiction to above plot, if alcohol is consumed on weekends, then it is affecting the scores of a student slightly on the lighter side(less effect) because we can see that there are more plots to the right as well(5 score of Walc) through which we can interpret that consuming alcohol on weekends is acceptable as it does not have a huge impact on scores of a student irrespective of their absences,also, better the family relation better the grades(dense plots and more population presence at that side of the plot)
+
+
+
+
+
+
+
+
+
+###FAMILY RELATION,SEX AND USAGE OF INTERNET AND ITS EFFECT ON GRADES
+```{r}
+ggplot(requdata, aes(x=factor(internet), y=G2))+
+  geom_point(alpha=0.5) +
+  facet_grid(sex~factor(famrel))
+```
+
+
+
+###Interpretation
+
+
+We can see that many students have an internet provision and grades are  good for the ones who have as the plots are denser towards the mean and the top for the ones with internet provisio at their residence, also few students might be misusing it so their grades have been on the lower side
+
+
+
+
+
+##CONCLUSION
+
+Hereby, we can say looking at the plots that are a topic of debate that there are quite a few factors(variables) that are deviating students from focusing on their studies and are messing up their grades(like alcohol consumption on workday,internet etc), but on the other hand we have also seen a set of population(students) that are able to balance their social and academic lives equally and are fetching good or average grades that are being expected from them, so it comes down to a student being able to manage his time and prioritize their jobs to be able to perform better and achieve good grades
